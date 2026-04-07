@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeatX Lite — Current End-to-End Lifecycle Flow</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --primary: #2563eb;
+    --primary-light: #dbeafe;
+    --emerald: #059669;
+    --emerald-light: #d1fae5;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --violet: #7c3aed;
+    --violet-light: #ede9fe;
+    --rose: #e11d48;
+    --rose-light: #ffe4e6;
+    --orange: #ea580c;
+    --orange-light: #ffedd5;
+    --cyan: #0891b2;
+    --cyan-light: #cffafe;
+    --slate: #475569;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 50%, #0ea5e9 100%);
+    color: white;
+    padding: 60px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E");
+  }
+  .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2.8rem; font-weight: 700; position: relative; letter-spacing: -0.02em; }
+  .hero p { font-size: 1.1rem; opacity: 0.8; margin-top: 12px; position: relative; max-width: 600px; margin-left: auto; margin-right: auto; }
+  .hero .badge { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 50px; padding: 6px 18px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 20px; position: relative; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* Section */
+  .section { padding: 56px 0; }
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title .icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+  }
+  .section-desc { color: var(--muted); font-size: 0.95rem; margin-bottom: 32px; max-width: 700px; }
+
+  /* Roles bar */
+  .roles-bar {
+    display: flex; flex-wrap: wrap; gap: 10px; margin: 40px 0;
+    justify-content: center;
+  }
+  .role-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border-radius: 50px;
+    font-size: 0.8rem; font-weight: 600;
+    border: 2px solid; background: white;
+  }
+  .role-chip .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 48px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 18px; top: 0; bottom: 0;
+    width: 3px; background: linear-gradient(180deg, var(--primary), var(--emerald), var(--amber), var(--violet), var(--orange), var(--cyan));
+    border-radius: 4px;
+  }
+  .tl-item {
+    position: relative; margin-bottom: 28px;
+    animation: slideIn 0.5s ease both;
+  }
+  .tl-item:nth-child(1) { animation-delay: 0.05s; }
+  .tl-item:nth-child(2) { animation-delay: 0.1s; }
+  .tl-item:nth-child(3) { animation-delay: 0.15s; }
+  .tl-item:nth-child(4) { animation-delay: 0.2s; }
+  .tl-item:nth-child(5) { animation-delay: 0.25s; }
+  .tl-item:nth-child(6) { animation-delay: 0.3s; }
+  .tl-item:nth-child(7) { animation-delay: 0.35s; }
+  .tl-item:nth-child(8) { animation-delay: 0.4s; }
+  .tl-item:nth-child(9) { animation-delay: 0.45s; }
+  .tl-item:nth-child(10) { animation-delay: 0.5s; }
+
+  .tl-dot {
+    position: absolute; left: -48px; top: 4px;
+    width: 33px; height: 33px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700; color: white;
+    z-index: 2; box-shadow: 0 0 0 4px var(--bg);
+  }
+  .tl-card {
+    background: var(--card); border-radius: 16px;
+    border: 1px solid var(--border); padding: 20px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .tl-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
+  .tl-card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; }
+  .tl-card .role-tag {
+    display: inline-block; padding: 2px 10px; border-radius: 50px;
+    font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; margin-bottom: 8px;
+  }
+  .tl-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+  .tl-card .steps {
+    margin-top: 12px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .tl-card .step {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 0.8rem; color: var(--text);
+  }
+  .tl-card .step-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; font-weight: 700; color: white; flex-shrink: 0; margin-top: 1px;
+  }
+  .tl-card .dep {
+    margin-top: 12px; padding: 8px 12px;
+    background: #fef3c7; border-left: 3px solid #f59e0b;
+    border-radius: 0 8px 8px 0; font-size: 0.75rem; color: #92400e;
+  }
+  .tl-card .break {
+    margin-top: 12px; padding: 8px 12px;
+    background: #ffe4e6; border-left: 3px solid #e11d48;
+    border-radius: 0 8px 8px 0; font-size: 0.75rem; color: #9f1239;
+  }
+
+  /* Connector arrow */
+  .connector {
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px 0; color: var(--muted); font-size: 0.75rem; gap: 8px;
+  }
+  .connector svg { width: 24px; height: 24px; }
+
+  /* Summary cards */
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; margin-top: 32px;
+  }
+  .summary-card {
+    background: var(--card); border-radius: 16px;
+    border: 1px solid var(--border); padding: 24px;
+    text-align: center;
+  }
+  .summary-card .num { font-family: 'Space Grotesk', sans-serif; font-size: 2.4rem; font-weight: 700; }
+  .summary-card .label { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+
+  /* Footer */
+  .footer {
+    text-align: center; padding: 40px 24px; color: var(--muted);
+    font-size: 0.8rem; border-top: 1px solid var(--border);
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.8rem; }
+    .timeline { padding-left: 40px; }
+    .tl-dot { left: -40px; width: 28px; height: 28px; font-size: 0.6rem; }
+    .roles-bar { gap: 6px; }
+    .role-chip { padding: 6px 12px; font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>Current End-to-End Lifecycle Flow</h1>
+  <p>Complete operational journey of devices, distributors, and agreements — from onboarding to shipment and back.</p>
+  <div class="badge">BeatX Lite Onboarding Portal • Live Flow</div>
+</div>
+
+<!-- Roles -->
+<div class="container">
+  <div class="roles-bar">
+    <div class="role-chip" style="border-color: var(--primary);"><div class="dot" style="background: var(--primary);"></div>Marketing Admin</div>
+    <div class="role-chip" style="border-color: var(--amber);"><div class="dot" style="background: var(--amber);"></div>Finance Admin</div>
+    <div class="role-chip" style="border-color: var(--violet);"><div class="dot" style="background: var(--violet);"></div>Compliance Admin</div>
+    <div class="role-chip" style="border-color: var(--orange);"><div class="dot" style="background: var(--orange);"></div>Inventory Admin</div>
+    <div class="role-chip" style="border-color: var(--rose);"><div class="dot" style="background: var(--rose);"></div>QC/QA Tester</div>
+    <div class="role-chip" style="border-color: var(--cyan);"><div class="dot" style="background: var(--cyan);"></div>Distributor / Hospital</div>
+    <div class="role-chip" style="border-color: var(--slate);"><div class="dot" style="background: var(--slate);"></div>Super Admin</div>
+  </div>
+</div>
+
+<!-- TRACK A: DEVICE LIFECYCLE -->
+<div class="container section">
+  <div class="section-title">
+    <div class="icon" style="background: var(--orange-light); color: var(--orange);">⚙️</div>
+    Track A — Device Lifecycle
+  </div>
+  <p class="section-desc">Physical device journey from onboarding through QC, packaging, and shipment.</p>
+
+  <div class="timeline">
+    <!-- 1 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--orange);">1</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--orange-light); color: var(--orange);">Inventory Admin</div>
+        <h3>Device Onboarding</h3>
+        <p>Register new device with Serial Number, Model Number, Device Name, and MAC ID.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--orange);">1</div>Enter serial number + model</div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">2</div>Enter BLE MAC ID</div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">3</div>Submit → Status: <strong>ONBOARDING</strong></div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">4</div>Click "Submit to QC" → <strong>PENDING_QC</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--rose);">2</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--rose-light); color: var(--rose);">QC/QA Tester</div>
+        <h3>QC/QA Testing</h3>
+        <p>Connect device via BLE, run Holter/MCT ECG study, verify signal quality.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--rose);">1</div>Create test cycles (mode, orientation, duration per cycle)</div>
+          <div class="step"><div class="step-num" style="background: var(--rose);">2</div>Connect via Web Bluetooth</div>
+          <div class="step"><div class="step-num" style="background: var(--rose);">3</div>Start testing → device records ECG</div>
+          <div class="step"><div class="step-num" style="background: var(--rose);">4</div>Auto-fetch BSE → convert to EDF → view ECG</div>
+          <div class="step"><div class="step-num" style="background: var(--rose);">5</div>Mark QC Passed or Nonconforming</div>
+        </div>
+        <div class="dep">⚠️ Dependency: BLE connection required. iOS users need Bluefy browser.</div>
+        <div class="break">🔴 Breakpoint: If BLE fails, manual EDF upload is available as fallback.</div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--orange);">3</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--orange-light); color: var(--orange);">Inventory Admin</div>
+        <h3>Packaging (Image Onboarding)</h3>
+        <p>After QC pass, device moves to PACKAGING. Upload all 7 onboarding images.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--orange);">1</div>Device auto-transitions to <strong>PACKAGING</strong></div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">2</div>Upload 7 images: front, back, left, right, top, serial label, MAC label</div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">3</div>All 7 uploaded → "Ready to Ship" button activates</div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">4</div>Click "Ready to Ship" → <strong>READY_TO_SHIP</strong></div>
+        </div>
+        <div class="dep">⚠️ All 7 images mandatory. Can delete and re-upload during packaging.</div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--primary);">4</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--primary-light); color: var(--primary);">Marketing Admin</div>
+        <h3>Device Allocation & Shipment</h3>
+        <p>Marketing creates shipment request → Inventory processes → Device ships.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--primary);">1</div>Marketing selects ready devices + assigns to distributor/hospital</div>
+          <div class="step"><div class="step-num" style="background: var(--primary);">2</div>Creates shipment request → Inventory Admin notified</div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">3</div>Inventory creates shipment (carrier + tracking)</div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">4</div>Status: INITIATED → AWAITING_PICKUP → IN_TRANSIT → <strong>DELIVERED</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Connector -->
+<div class="container">
+  <div class="connector">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+    Device delivered to distributor/hospital — lifecycle continues if returned
+  </div>
+</div>
+
+<!-- TRACK B: DISTRIBUTOR ONBOARDING -->
+<div class="container section" style="padding-top: 0;">
+  <div class="section-title">
+    <div class="icon" style="background: var(--primary-light); color: var(--primary);">👤</div>
+    Track B — Distributor / Hospital Onboarding
+  </div>
+  <p class="section-desc">End-to-end onboarding pipeline from invite to agreement completion.</p>
+
+  <div class="timeline">
+    <!-- 1 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--primary);">1</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--primary-light); color: var(--primary);">Marketing Admin</div>
+        <h3>Create Onboarding Invite</h3>
+        <p>Generate a secure, tokenized link with entity type (Registered/Unregistered for distributors, Private/Government for hospitals).</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--primary);">1</div>Fill name, email, mobile, company, category</div>
+          <div class="step"><div class="step-num" style="background: var(--primary);">2</div>Select entity type + language preference</div>
+          <div class="step"><div class="step-num" style="background: var(--primary);">3</div>Generate link → send to invitee</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--cyan);">2</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--cyan-light); color: var(--cyan);">Distributor / Hospital</div>
+        <h3>Onboarding Portal</h3>
+        <p>Invitee opens the link → watches intro videos → fills multi-step form → submits.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--cyan);">1</div>Welcome screen (translated to selected language)</div>
+          <div class="step"><div class="step-num" style="background: var(--cyan);">2</div>Watch mandatory video(s)</div>
+          <div class="step"><div class="step-num" style="background: var(--cyan);">3</div>Fill form: company info, GSTIN, contacts, address, documents</div>
+          <div class="step"><div class="step-num" style="background: var(--cyan);">4</div>Submit → form data translated to English for internal use</div>
+        </div>
+        <div class="dep">⚠️ GSTIN mandatory for: Registered distributors + ALL hospitals</div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--amber);">3</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--amber-light); color: var(--amber);">Finance Admin</div>
+        <h3>Finance Profile Review</h3>
+        <p>Finance reviews the submitted profile. Can edit English form data before approving.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--amber);">1</div>Review form data (Form Data tab)</div>
+          <div class="step"><div class="step-num" style="background: var(--amber);">2</div>Edit spelling/corrections in English if needed</div>
+          <div class="step"><div class="step-num" style="background: var(--amber);">3</div>Click "Save & Lock" → data permanently locked</div>
+          <div class="step"><div class="step-num" style="background: var(--amber);">4</div>Approve → <strong>FINANCE_PROFILE_APPROVED</strong></div>
+        </div>
+        <div class="dep">⚠️ Gate: Agreements cannot be drafted until Finance approves.</div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--violet);">4</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--violet-light); color: var(--violet);">Compliance Admin</div>
+        <h3>Template & Agreement Management</h3>
+        <p>Create templates, generate agreements with merged data, send for signature.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--violet);">1</div>Upload DOCX template → edit with placeholders ({{company_name}})</div>
+          <div class="step"><div class="step-num" style="background: var(--violet);">2</div>Generate agreement draft → placeholders replaced with form data</div>
+          <div class="step"><div class="step-num" style="background: var(--violet);">3</div>Send for signature (DocuSign / Email / Manual)</div>
+          <div class="step"><div class="step-num" style="background: var(--violet);">4</div>Signed copy received → auto-downloaded from DocuSign</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--violet);">5</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--violet-light); color: var(--violet);">Compliance Admin</div>
+        <h3>Compliance Review</h3>
+        <p>Review the signed agreement → Approve or Reject.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--violet);">1</div>View signed agreement PDF</div>
+          <div class="step"><div class="step-num" style="background: var(--violet);">2</div>Approve → triggers inventory + finance notifications</div>
+          <div class="step"><div class="step-num" style="background: var(--violet);">3</div>Reject → returns to Marketing for correction</div>
+        </div>
+        <div class="dep">⚠️ Gate: Fulfillment cannot proceed until Compliance approves.</div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--emerald);">6</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--emerald-light); color: var(--emerald);">System</div>
+        <h3>Fulfillment & Completion</h3>
+        <p>Devices shipped → Distributor status auto-advances to ONBOARDING_COMPLETE.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--emerald);">1</div>Shipment created → status: <strong>SHIPPED</strong></div>
+          <div class="step"><div class="step-num" style="background: var(--emerald);">2</div>Shipment delivered → <strong>ONBOARDING_COMPLETE</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Connector -->
+<div class="container">
+  <div class="connector">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+    Device in use by distributor/hospital — return flow triggered if needed
+  </div>
+</div>
+
+<!-- TRACK C: RETURN & RE-QC -->
+<div class="container section" style="padding-top: 0;">
+  <div class="section-title">
+    <div class="icon" style="background: var(--rose-light); color: var(--rose);">🔄</div>
+    Track C — Return, Re-QC & Re-Shipment
+  </div>
+  <p class="section-desc">When a device is returned, it goes through condition documentation, re-testing, re-packaging, and re-shipment.</p>
+
+  <div class="timeline">
+    <!-- 1 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--primary);">1</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--primary-light); color: var(--primary);">Marketing Admin</div>
+        <h3>Initiate Return</h3>
+        <p>Marketing initiates return request for specific devices with reason.</p>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--orange);">2</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--orange-light); color: var(--orange);">Inventory Admin</div>
+        <h3>Receive Return → Upload Return Images</h3>
+        <p>Inventory receives the physical device and documents its condition.</p>
+        <div class="steps">
+          <div class="step"><div class="step-num" style="background: var(--orange);">1</div>Mark return as received → <strong>RETURNED_TO_INVENTORY</strong></div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">2</div>Click "Upload Return Images"</div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">3</div>Upload all 7 return condition images (mandatory)</div>
+          <div class="step"><div class="step-num" style="background: var(--orange);">4</div>Images logged with timestamp under packaging history</div>
+        </div>
+        <div class="dep">⚠️ All 7 return images mandatory before Re-QC can proceed.</div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--orange);">3</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--orange-light); color: var(--orange);">Inventory Admin</div>
+        <h3>Send to Re-QC</h3>
+        <p>After return images uploaded, "Send to Re-QC" button activates. Device moves to QC queue.</p>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--rose);">4</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--rose-light); color: var(--rose);">QC/QA Tester</div>
+        <h3>Re-QC Testing</h3>
+        <p>Same QC process as initial: BLE connect → ECG study → verify → Pass/Fail.</p>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--orange);">5</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--orange-light); color: var(--orange);">Inventory Admin</div>
+        <h3>Re-Packaging</h3>
+        <p>After Re-QC pass → PACKAGING. Upload fresh 7 packaging images → Ready to Ship.</p>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="tl-item">
+      <div class="tl-dot" style="background: var(--emerald);">6</div>
+      <div class="tl-card">
+        <div class="role-tag" style="background: var(--emerald-light); color: var(--emerald);">System</div>
+        <h3>Back to Shipment</h3>
+        <p>Device re-enters the normal allocation → shipment → delivery flow. Full cycle complete.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary -->
+<div class="container section" style="padding-top: 0;">
+  <div class="section-title">
+    <div class="icon" style="background: var(--emerald-light); color: var(--emerald);">📊</div>
+    Lifecycle Summary
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="num" style="color: var(--primary);">7</div>
+      <div class="label">User Roles in the Flow</div>
+    </div>
+    <div class="summary-card">
+      <div class="num" style="color: var(--orange);">14</div>
+      <div class="label">Device Status Stages</div>
+    </div>
+    <div class="summary-card">
+      <div class="num" style="color: var(--violet);">15</div>
+      <div class="label">Distributor Pipeline Stages</div>
+    </div>
+    <div class="summary-card">
+      <div class="num" style="color: var(--amber);">3</div>
+      <div class="label">Approval Gates</div>
+    </div>
+    <div class="summary-card">
+      <div class="num" style="color: var(--rose);">2</div>
+      <div class="label">QC Checkpoints</div>
+    </div>
+    <div class="summary-card">
+      <div class="num" style="color: var(--emerald);">∞</div>
+      <div class="label">Return Cycles Supported</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>BeatX Lite Distributor Onboarding Portal — Lifecycle Documentation</p>
+  <p style="margin-top: 4px; opacity: 0.6;">Generated March 2026 • Xelements Health Private Limited</p>
+</div>
+
+</body>
+</html>

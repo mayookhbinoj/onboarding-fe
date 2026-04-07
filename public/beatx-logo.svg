@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 70" fill="none">
+  <defs>
+    <linearGradient id="beatx-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a6dea"/>
+      <stop offset="50%" style="stop-color:#2196f3"/>
+      <stop offset="100%" style="stop-color:#4dd9c0"/>
+    </linearGradient>
+    <linearGradient id="beatx-grad-dark" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4d9fff"/>
+      <stop offset="50%" style="stop-color:#42b4f5"/>
+      <stop offset="100%" style="stop-color:#6eecd4"/>
+    </linearGradient>
+  </defs>
+  <!-- B with heartbeat -->
+  <g class="beatx-logo-paths">
+    <!-- B letter body -->
+    <path d="M8 8 h24 c12 0 18 6 18 14 c0 5-3 9-8 11 c6 2 10 7 10 13 c0 9-7 16-20 16 H8 V8z M20 30 h10 c5 0 8-3 8-7 s-3-7-8-7 H20 V30z M20 54 h12 c6 0 9-3 9-8 s-3-8-9-8 H20 V54z" fill="url(#beatx-grad)"/>
+    <!-- Heartbeat line over B -->
+    <path d="M2 32 L14 32 L18 20 L24 42 L28 28 L32 32 L56 32" stroke="url(#beatx-grad)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- eat text -->
+    <text x="62" y="56" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="700" fill="url(#beatx-grad)" letter-spacing="-1">eat</text>
+    <!-- X with stylized strokes -->
+    <g transform="translate(185, 10)">
+      <path d="M8 0 L40 50 M40 0 L8 50" stroke="url(#beatx-grad)" stroke-width="8" stroke-linecap="round" fill="none"/>
+      <path d="M32 0 C50 8 55 18 48 25 M48 25 C55 32 50 42 32 50" stroke="url(#beatx-grad)" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.7"/>
+      <path d="M16 0 C-2 8 -7 18 0 25 M0 25 C-7 32 -2 42 16 50" stroke="url(#beatx-grad)" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.7"/>
+    </g>
+  </g>
+</svg>

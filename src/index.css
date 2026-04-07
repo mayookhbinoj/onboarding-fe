@@ -1,0 +1,256 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 217 91% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 214 32% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 214 32% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 188 85% 94%;
+    --accent-foreground: 217 91% 35%;
+    --destructive: 0 74% 52%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 20% 90%;
+    --input: 214 20% 90%;
+    --ring: 217 91% 53%;
+    --radius: 0.75rem;
+    --chart-1: 217 91% 53%;
+    --chart-2: 199 89% 48%;
+    --chart-3: 188 95% 43%;
+    --chart-4: 35 92% 55%;
+    --chart-5: 0 74% 52%;
+  }
+
+  .dark {
+    --background: 222 47% 7%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 7%;
+    --secondary: 217 20% 14%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 20% 14%;
+    --muted-foreground: 215 18% 68%;
+    --accent: 188 45% 16%;
+    --accent-foreground: 188 60% 92%;
+    --destructive: 0 62% 35%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 20% 16%;
+    --input: 217 20% 16%;
+    --ring: 217 91% 60%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 199 89% 55%;
+    --chart-3: 188 95% 50%;
+    --chart-4: 35 92% 60%;
+    --chart-5: 0 74% 58%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+
+/* Consistent button sizing across all pages */
+button[class*="inline-flex"][class*="rounded"] {
+  min-height: 32px;
+}
+
+/* Global staggered slide-up animation for list rows/cards */
+@keyframes rowSlideUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-row-in {
+  animation: rowSlideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-row-in:nth-child(1) { animation-delay: 0ms; }
+.animate-row-in:nth-child(2) { animation-delay: 30ms; }
+.animate-row-in:nth-child(3) { animation-delay: 60ms; }
+.animate-row-in:nth-child(4) { animation-delay: 90ms; }
+.animate-row-in:nth-child(5) { animation-delay: 120ms; }
+.animate-row-in:nth-child(6) { animation-delay: 150ms; }
+.animate-row-in:nth-child(7) { animation-delay: 180ms; }
+.animate-row-in:nth-child(8) { animation-delay: 210ms; }
+.animate-row-in:nth-child(9) { animation-delay: 240ms; }
+.animate-row-in:nth-child(10) { animation-delay: 270ms; }
+.animate-row-in:nth-child(n+11) { animation-delay: 300ms; }
+
+/* Global breathing space — cards and rows never press against each other */
+.space-y-1 > * + * { margin-top: 0.5rem !important; }
+.space-y-1\.5 > * + * { margin-top: 0.625rem !important; }
+[class*="CardContent"] { padding: 1rem; }
+table tbody tr + tr { border-top: 1px solid hsl(var(--border)); }
+table tbody tr td { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+
+
+/* Blue shimmer hover — radiates from cursor position, uses theme primary color */
+.device-shimmer-card {
+  position: relative;
+  overflow: hidden;
+  --shimmer-x: 50%;
+  --shimmer-y: 50%;
+  transition: box-shadow 0.15s ease;
+}
+.device-shimmer-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle 120px at var(--shimmer-x) var(--shimmer-y), hsl(var(--primary) / 0.12), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  will-change: opacity;
+}
+.device-shimmer-card:hover {
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.18), 0 2px 8px hsl(var(--primary) / 0.1);
+}
+.device-shimmer-card:hover::after {
+  opacity: 1;
+}
+
+
+/* Dark theme support for midnight theme */
+body.dark-theme {
+  color-scheme: dark;
+}
+/* Dark theme: ensure hardcoded light-bg alert/warning containers remain readable */
+body.dark-theme .bg-amber-50,
+body.dark-theme .bg-amber-50\/50 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+}
+body.dark-theme .bg-red-50,
+body.dark-theme .bg-red-50\/50 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+}
+body.dark-theme .bg-emerald-50,
+body.dark-theme .bg-emerald-50\/50,
+body.dark-theme .bg-emerald-50\/30,
+body.dark-theme .bg-emerald-50\/20 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+}
+body.dark-theme .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+body.dark-theme .bg-rose-50 {
+  background-color: rgba(244, 63, 94, 0.15) !important;
+}
+body.dark-theme .bg-orange-50 {
+  background-color: rgba(249, 115, 22, 0.15) !important;
+}
+body.dark-theme .bg-yellow-50 {
+  background-color: rgba(234, 179, 8, 0.15) !important;
+}
+body.dark-theme .bg-indigo-50\/50 {
+  background-color: rgba(99, 102, 241, 0.15) !important;
+}
+body.dark-theme .text-amber-800,
+body.dark-theme .text-amber-700 {
+  color: rgb(251, 191, 36) !important;
+}
+body.dark-theme .text-red-800,
+body.dark-theme .text-red-700 {
+  color: rgb(248, 113, 113) !important;
+}
+body.dark-theme .text-emerald-800,
+body.dark-theme .text-emerald-700 {
+  color: rgb(52, 211, 153) !important;
+}
+body.dark-theme .text-blue-800,
+body.dark-theme .text-blue-700 {
+  color: rgb(96, 165, 250) !important;
+}
+body.dark-theme .text-rose-800,
+body.dark-theme .text-rose-700 {
+  color: rgb(251, 113, 133) !important;
+}
+body.dark-theme .text-orange-800,
+body.dark-theme .text-orange-700 {
+  color: rgb(251, 146, 60) !important;
+}
+body.dark-theme .text-indigo-800 {
+  color: rgb(165, 180, 252) !important;
+}
+body.dark-theme .bg-white\/70 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+/* Dark theme: action required pulse badge */
+body.dark-theme .bg-amber-100 {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+}
+body.dark-theme .bg-amber-50\/40 {
+  background-color: rgba(245, 158, 11, 0.08) !important;
+}
+body.dark-theme .border-amber-300 {
+  border-color: rgba(245, 158, 11, 0.4) !important;
+}
+body.dark-theme .bg-amber-50\/50 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+body.dark-theme .bg-emerald-50\/50 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+
+/* ═══ Mobile Responsive Utilities ═══ */
+@layer utilities {
+  /* Make tables horizontally scrollable on mobile */
+  .mobile-table-wrap {
+    @apply overflow-x-auto -mx-4 px-4;
+  }
+  @media (min-width: 768px) {
+    .mobile-table-wrap {
+      @apply mx-0 px-0 overflow-visible;
+    }
+  }
+}
+
+/* Global mobile responsive fixes */
+@media (max-width: 767px) {
+  /* Tables: minimum width so they scroll horizontally */
+  table { min-width: 600px; }
+  
+  /* Cards: reduce padding on mobile */
+  .p-4 { padding: 0.75rem; }
+  .p-6 { padding: 1rem; }
+  .p-8 { padding: 1.25rem; }
+  
+  /* Dialogs: full-width on mobile */
+  [role="dialog"] > div {
+    max-width: calc(100vw - 1rem) !important;
+    margin: 0.5rem;
+  }
+  
+  /* Fix header icons overlapping on small screens */
+  header { padding-left: 0.5rem; padding-right: 0.5rem; }
+  
+  /* Badge text size reduction */
+  .text-xs { font-size: 0.65rem; }
+  
+  /* Tab triggers: smaller on mobile */
+  [role="tablist"] button { font-size: 0.75rem; padding: 0.375rem 0.75rem; }
+}
+
